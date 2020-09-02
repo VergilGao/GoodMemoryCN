@@ -96,7 +96,7 @@ namespace GoodMemory {
                 overwrite = ReadString(start);
 
                 foreach (Item result in recipeResults) {
-                    ItemAction resultAction = result.ItemAction.Value;
+                    ItemAction resultAction = result.ItemAction?.Value;
                     if (!ActionTypeExt.IsValidAction(resultAction)) {
                         continue;
                     }
