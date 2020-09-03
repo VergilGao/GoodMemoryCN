@@ -2,7 +2,6 @@
 using Dalamud.Plugin;
 using Lumina.Excel.GeneratedSheets;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,7 +17,7 @@ namespace GoodMemory {
         private readonly IntPtr alloc = Marshal.AllocHGlobal(4096);
         private Hook<TooltipDelegate> tooltipHook;
 
-        private delegate IntPtr TooltipDelegate(IntPtr a1, IntPtr a2, IntPtr a3);
+        private unsafe delegate IntPtr TooltipDelegate(IntPtr a1, uint** a2, byte*** a3);
 
         public void Initialize(DalamudPluginInterface pluginInterface) {
             this.Interface = pluginInterface ?? throw new ArgumentNullException(nameof(pluginInterface), "DalamudPluginInterface cannot be null");
@@ -48,13 +47,17 @@ namespace GoodMemory {
             if (tooltipPtr == IntPtr.Zero) {
                 throw new ApplicationException("Could not set up tooltip hook because of null pointer");
             }
-            this.tooltipHook = new Hook<TooltipDelegate>(tooltipPtr, new TooltipDelegate(this.OnTooltip));
+            unsafe {
+                this.tooltipHook = new Hook<TooltipDelegate>(tooltipPtr, new TooltipDelegate(this.OnTooltip));
+            }
             this.tooltipHook.Enable();
         }
 
-        private IntPtr OnTooltip(IntPtr a1, IntPtr a2, IntPtr a3) {
-            IntPtr v3 = Marshal.ReadIntPtr(a2 + 32);
-            uint v9 = (uint)Marshal.ReadInt32(v3 + 16);
+        private unsafe IntPtr OnTooltip(IntPtr a1, uint** a2, byte*** a3) {
+            // this can be replaced with a mid-func hook when reloaded hooks is in dalamud
+            // but for now, do the same logic the func does and replace the text after
+            uint* v3 = *(a2 + 4);
+            uint v9 = *(v3 + 4);
 
             if ((v9 & 2) == 0) {
                 goto Return;
@@ -74,12 +77,12 @@ namespace GoodMemory {
             }
 
             // get the pointer to the text
-            IntPtr startPtr = Marshal.ReadIntPtr(a3 + 32) + 104;
+            byte** startPtr = *(a3 + 4) + 13;
             // get the text pointer
-            IntPtr start = Marshal.ReadIntPtr(startPtr);
+            byte* start = *startPtr;
 
             // work around function being called twice
-            if (start == this.alloc) {
+            if (start == (byte*)this.alloc) {
                 goto Return;
             }
 
@@ -118,10 +121,10 @@ namespace GoodMemory {
             }
 
             // write our replacement text into our own managed memory (4096 bytes)
-            WriteString(this.alloc, overwrite, true);
+            WriteString((byte*)this.alloc, overwrite, true);
 
             // overwrite the original pointer with our own
-            Marshal.WriteIntPtr(startPtr, this.alloc);
+            *startPtr = (byte*)this.alloc;
 
         Return:
             return this.tooltipHook.Original(a1, a2, a3);
@@ -136,25 +139,25 @@ namespace GoodMemory {
             }
         }
 
-        private static string ReadString(IntPtr ptr) {
+        private unsafe static string ReadString(byte* ptr) {
             int offset = 0;
-            List<byte> stringBytes = new List<byte>();
             while (true) {
-                byte b = Marshal.ReadByte(ptr + offset);
+                byte b = *(ptr + offset);
                 if (b == 0) {
                     break;
                 }
-                stringBytes.Add(b);
                 offset += 1;
             }
-            return Encoding.UTF8.GetString(stringBytes.ToArray());
+            return Encoding.UTF8.GetString(ptr, offset);
         }
 
-        private static void WriteString(IntPtr dst, string s, bool finalise = false) {
+        private unsafe static void WriteString(byte* dst, string s, bool finalise = false) {
             byte[] bytes = Encoding.UTF8.GetBytes(s);
-            Marshal.Copy(bytes, 0, dst, bytes.Length);
+            for (int i = 0; i < bytes.Length; i++) {
+                *(dst + i) = bytes[i];
+            }
             if (finalise) {
-                Marshal.WriteByte(dst + bytes.Length, 0);
+                *(dst + bytes.Length) = 0;
             }
         }
     }
