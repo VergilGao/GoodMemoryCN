@@ -21,7 +21,7 @@ namespace GoodMemory {
         Bardings = 1_013, // bardings
         Mounts = 1_322, // mounts
         CrafterBooks = 2_136, // crafter books
-        Miscellaneous = 2_633, // riding maps, blu totems, emotes/dances
+        Miscellaneous = 2_633, // riding maps, blu totems, emotes/dances, hairstyles
         Cards = 3_357, // cards
         GathererBooks = 4_107, // gatherer books
         OrchestrionRolls = 5_845, // orchestrion rolls
