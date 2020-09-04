@@ -104,7 +104,13 @@ namespace GoodMemory {
                         continue;
                     }
 
-                    this.AppendIfAcquired(ref overwrite, result, true);
+                    uint orchId = resultAction.Data[0];
+                    Orchestrion orch = this.Interface.Data.GetExcelSheet<Orchestrion>().GetRow(orchId);
+                    if (orch == null) {
+                        continue;
+                    }
+
+                    this.AppendIfAcquired(ref overwrite, result, orch.Name);
                 }
             } else {
                 ItemAction action = item.ItemAction?.Value;
@@ -130,10 +136,10 @@ namespace GoodMemory {
             return this.tooltipHook.Original(a1, a2, a3);
         }
 
-        private void AppendIfAcquired(ref string txt, Item item, bool useItem = false) {
+        private void AppendIfAcquired(ref string txt, Item item, string name = null) {
             string has = this.Functions.HasAcquired(item) ? "Yes" : "No";
-            if (useItem) {
-                txt = $"{txt}\nAcquired ({item.Name}): {has}";
+            if (name != null) {
+                txt = $"{txt}\nAcquired ({name}): {has}";
             } else {
                 txt = $"{txt}\nAcquired: {has}";
             }
