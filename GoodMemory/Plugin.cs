@@ -137,11 +137,53 @@ namespace GoodMemory {
         }
 
         private void AppendIfAcquired(ref string txt, Item item, string name = null) {
-            string has = this.Functions.HasAcquired(item) ? "Yes" : "No";
+            string yes;
+            string no;
+            string acquired;
+            string colon;
+            string parenL;
+            string parenR;
+            switch (this.Interface.ClientState.ClientLanguage) {
+                case Dalamud.ClientLanguage.English:
+                default:
+                    acquired = "Acquired";
+                    colon = ": ";
+                    yes = "Yes";
+                    no = "No";
+                    parenL = " (";
+                    parenR = ")";
+                    break;
+                case Dalamud.ClientLanguage.French:
+                    acquired = "Acquis";
+                    colon = " : ";
+                    yes = "Oui";
+                    no = "Non";
+                    parenL = " (";
+                    parenR = ")";
+                    break;
+                case Dalamud.ClientLanguage.German:
+                    acquired = "Erhalten";
+                    colon = ": ";
+                    yes = "Ja";
+                    no = "Nein";
+                    parenL = " (";
+                    parenR = ")";
+                    break;
+                case Dalamud.ClientLanguage.Japanese:
+                    acquired = "取得";
+                    colon = "：";
+                    yes = "あり";
+                    no = "なし";
+                    parenL = "（";
+                    parenR = "）";
+                    break;
+            }
+
+            string has = this.Functions.HasAcquired(item) ? yes : no;
             if (name != null) {
-                txt = $"{txt}\nAcquired ({name}): {has}";
+                txt = $"{txt}\n{acquired}{parenL}{name}{parenR}{colon}{has}";
             } else {
-                txt = $"{txt}\nAcquired: {has}";
+                txt = $"{txt}\n{acquired}{colon}{has}";
             }
         }
 
