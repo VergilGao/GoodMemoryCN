@@ -25,6 +25,7 @@ namespace GoodMemory {
         Cards = 3_357, // cards
         GathererBooks = 4_107, // gatherer books
         OrchestrionRolls = 5_845, // orchestrion rolls
+        FieldNotes = 19_743, // bozjan field notes
         FashionAccessories = 20_086, // fashion accessories
     }
 }

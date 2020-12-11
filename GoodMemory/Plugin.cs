@@ -2,6 +2,7 @@
 using Dalamud.Plugin;
 using Lumina.Excel.GeneratedSheets;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -47,33 +48,37 @@ namespace GoodMemory {
             if (tooltipPtr == IntPtr.Zero) {
                 throw new ApplicationException("Could not set up tooltip hook because of null pointer");
             }
+
             unsafe {
                 this.tooltipHook = new Hook<TooltipDelegate>(tooltipPtr, new TooltipDelegate(this.OnTooltip));
             }
+
             this.tooltipHook.Enable();
         }
 
-        private unsafe IntPtr OnTooltip(IntPtr a1, uint** a2, byte*** a3) {
+        private unsafe void TooltipLogic(IntPtr a1, uint** a2, byte*** a3) {
             // this can be replaced with a mid-func hook when reloaded hooks is in dalamud
             // but for now, do the same logic the func does and replace the text after
             uint* v3 = *(a2 + 4);
             uint v9 = *(v3 + 4);
 
             if ((v9 & 2) == 0) {
-                goto Return;
+                return;
             }
 
             ulong itemId = this.Interface.Framework.Gui.HoveredItem;
             if (itemId > 2_000_000) {
-                goto Return;
-            } else if (itemId > 1_000_000) {
+                return;
+            }
+
+            if (itemId > 1_000_000) {
                 itemId -= 1_000_000;
             }
 
             Item item = this.Interface.Data.GetExcelSheet<Item>().GetRow((uint)itemId);
 
             if (item == null) {
-                goto Return;
+                return;
             }
 
             // get the pointer to the text
@@ -83,7 +88,7 @@ namespace GoodMemory {
 
             // work around function being called twice
             if (start == (byte*)this.alloc) {
-                goto Return;
+                return;
             }
 
             string overwrite;
@@ -104,6 +109,8 @@ namespace GoodMemory {
                         continue;
                     }
 
+                    Debug.Assert(resultAction != null, nameof(resultAction) + " != null");
+
                     uint orchId = resultAction.Data[0];
                     Orchestrion orch = this.Interface.Data.GetExcelSheet<Orchestrion>().GetRow(orchId);
                     if (orch == null) {
@@ -116,7 +123,7 @@ namespace GoodMemory {
                 ItemAction action = item.ItemAction?.Value;
 
                 if (!ActionTypeExt.IsValidAction(action)) {
-                    goto Return;
+                    return;
                 }
 
                 // get the text
@@ -131,8 +138,15 @@ namespace GoodMemory {
 
             // overwrite the original pointer with our own
             *startPtr = (byte*)this.alloc;
+        }
 
-        Return:
+        private unsafe IntPtr OnTooltip(IntPtr a1, uint** a2, byte*** a3) {
+            try {
+                this.TooltipLogic(a1, a2, a3);
+            } catch (Exception ex) {
+                PluginLog.Error($"Could not modify tooltip:\n{ex.Message}\n{ex.StackTrace}");
+            }
+
             return this.tooltipHook.Original(a1, a2, a3);
         }
 
@@ -194,8 +208,10 @@ namespace GoodMemory {
                 if (b == 0) {
                     break;
                 }
+
                 offset += 1;
             }
+
             return Encoding.UTF8.GetString(ptr, offset);
         }
 
@@ -204,6 +220,7 @@ namespace GoodMemory {
             for (int i = 0; i < bytes.Length; i++) {
                 *(dst + i) = bytes[i];
             }
+
             if (finalise) {
                 *(dst + bytes.Length) = 0;
             }
