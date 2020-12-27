@@ -1,0 +1,8 @@
+﻿author: ascclemens
+name: GoodMemory
+description: |-
+  Adds an indicator in item tooltips to show whether you have acquired that item.
+
+  This indicator is in the item's description near the bottom and only appears for
+  items that are unlockable, such as orchestrion rolls, minions, etc.
+repo_url: https://git.sr.ht/~jkcclemens/GoodMemory

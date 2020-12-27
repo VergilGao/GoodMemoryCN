@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace GoodMemory {
     public static class ActionTypeExt {
-        private static readonly ActionType[] VALID = (ActionType[])Enum.GetValues(typeof(ActionType));
+        private static readonly ActionType[] Valid = (ActionType[])Enum.GetValues(typeof(ActionType));
 
-        public static bool IsValidAction(ItemAction action) {
+        public static bool IsValidAction(ItemAction? action) {
             if (action == null || action.RowId == 0) {
                 return false;
             }
 
-            ActionType type = (ActionType)action.Type;
-            return VALID.Contains(type);
+            var type = (ActionType)action.Type;
+            return Valid.Contains(type);
         }
     }
 

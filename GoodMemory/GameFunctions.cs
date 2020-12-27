@@ -4,58 +4,57 @@ using System.Runtime.InteropServices;
 
 namespace GoodMemory {
     public class GameFunctions {
-        private readonly Plugin plugin;
+        private Plugin Plugin { get; }
 
         private delegate byte HasItemActionUnlockedDelegate(long itemActionId);
-        private readonly HasItemActionUnlockedDelegate hasItemActionUnlocked;
+
+        private readonly HasItemActionUnlockedDelegate _hasItemActionUnlocked;
 
         private delegate byte HasCardDelegate(IntPtr localPlayer, ushort cardId);
-        private readonly HasCardDelegate hasCard;
 
-        private readonly IntPtr cardStaticAddr;
+        private readonly HasCardDelegate _hasCard;
+
+        private readonly IntPtr _cardStaticAddr;
 
         public GameFunctions(Plugin plugin) {
-            this.plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Plugin cannot be null");
+            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Plugin cannot be null");
 
-            IntPtr hasIAUnlockedPtr = plugin.Interface.TargetModuleScanner.ScanText("48 83 EC 28 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??");
-            IntPtr hasCardPtr = plugin.Interface.TargetModuleScanner.ScanText("40 53 48 83 EC 20 48 8B D9 66 85 D2 74 ??");
-            this.cardStaticAddr = plugin.Interface.TargetModuleScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 ?? 48 8B 53 ?? 48 8D 4B ?? 48 83 C2 0C 48 8D 14 ?? E8 ?? ?? ?? ?? 40 FE C7 40 3A FD 72 ?? 48 8B 5C 24 ??");
+            var hasIaUnlockedPtr = plugin.Interface.TargetModuleScanner.ScanText("48 83 EC 28 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??");
+            var hasCardPtr = plugin.Interface.TargetModuleScanner.ScanText("40 53 48 83 EC 20 48 8B D9 66 85 D2 74 ??");
+            this._cardStaticAddr = plugin.Interface.TargetModuleScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 ?? 48 8B 53 ?? 48 8D 4B ?? 48 83 C2 0C 48 8D 14 ?? E8 ?? ?? ?? ?? 40 FE C7 40 3A FD 72 ?? 48 8B 5C 24 ??");
 
-            if (hasIAUnlockedPtr == IntPtr.Zero || hasCardPtr == IntPtr.Zero || this.cardStaticAddr == IntPtr.Zero) {
+            if (hasIaUnlockedPtr == IntPtr.Zero || hasCardPtr == IntPtr.Zero || this._cardStaticAddr == IntPtr.Zero) {
                 throw new ApplicationException("Could not get pointers for game functions");
             }
 
-            this.hasItemActionUnlocked = Marshal.GetDelegateForFunctionPointer<HasItemActionUnlockedDelegate>(hasIAUnlockedPtr);
-            this.hasCard = Marshal.GetDelegateForFunctionPointer<HasCardDelegate>(hasCardPtr);
+            this._hasItemActionUnlocked = Marshal.GetDelegateForFunctionPointer<HasItemActionUnlockedDelegate>(hasIaUnlockedPtr);
+            this._hasCard = Marshal.GetDelegateForFunctionPointer<HasCardDelegate>(hasCardPtr);
         }
 
         public bool HasAcquired(Item item) {
-            ItemAction action = item.ItemAction.Value;
+            var action = item.ItemAction.Value;
 
             if (action == null) {
                 return false;
             }
 
-            ActionType type = (ActionType)action.Type;
+            var type = (ActionType)action.Type;
 
-            if (type == ActionType.Cards) {
-                uint cardId = item.AdditionalData;
-                TripleTriadCard card = this.plugin.Interface.Data.GetExcelSheet<TripleTriadCard>().GetRow(cardId);
-                if (card == null) {
-                    return false;
-                }
-                return this.HasCard((ushort)card.RowId);
+            if (type != ActionType.Cards) {
+                return this.HasItemActionUnlocked(action.RowId);
             }
 
-            return this.HasItemActionUnlocked(action.RowId);
+            var cardId = item.AdditionalData;
+            var card = this.Plugin.Interface.Data.GetExcelSheet<TripleTriadCard>().GetRow(cardId);
+            return card != null && this.HasCard((ushort)card.RowId);
         }
 
         private bool HasItemActionUnlocked(long itemActionId) {
-            return this.hasItemActionUnlocked(itemActionId) == 1;
+            return this._hasItemActionUnlocked(itemActionId) == 1;
         }
 
         private bool HasCard(ushort cardId) {
-            return this.hasCard(this.cardStaticAddr, cardId) == 1;
+            return this._hasCard(this._cardStaticAddr, cardId) == 1;
         }
     }
 }
