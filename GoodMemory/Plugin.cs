@@ -41,7 +41,7 @@ namespace GoodMemory {
 
         public void Dispose() {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -77,7 +77,7 @@ namespace GoodMemory {
                 itemId -= 1_000_000;
             }
 
-            var item = this.Interface.Data.GetExcelSheet<Item>().GetRow((uint)itemId);
+            var item = this.Interface.Data.GetExcelSheet<Item>().GetRow((uint) itemId);
 
             if (item == null) {
                 return;
@@ -89,7 +89,7 @@ namespace GoodMemory {
             var start = *startPtr;
 
             // work around function being called twice
-            if (start == (byte*)this._alloc) {
+            if (start == (byte*) this._alloc) {
                 return;
             }
 
@@ -136,10 +136,10 @@ namespace GoodMemory {
             }
 
             // write our replacement text into our own managed memory (4096 bytes)
-            WriteString((byte*)this._alloc, overwrite, true);
+            WriteString((byte*) this._alloc, overwrite, true);
 
             // overwrite the original pointer with our own
-            *startPtr = (byte*)this._alloc;
+            *startPtr = (byte*) this._alloc;
         }
 
         private unsafe IntPtr OnTooltip(IntPtr a1, uint** a2, byte*** a3) {
@@ -200,7 +200,7 @@ namespace GoodMemory {
                 : $"{txt}\n{acquired}{parenL}{name}{parenR}{colon}{has}";
         }
 
-        private unsafe static string ReadString(byte* ptr) {
+        private static unsafe string ReadString(byte* ptr) {
             var offset = 0;
             while (true) {
                 var b = *(ptr + offset);
@@ -214,7 +214,7 @@ namespace GoodMemory {
             return Encoding.UTF8.GetString(ptr, offset);
         }
 
-        private unsafe static void WriteString(byte* dst, string s, bool finalise = false) {
+        private static unsafe void WriteString(byte* dst, string s, bool finalise = false) {
             var bytes = Encoding.UTF8.GetBytes(s);
             for (var i = 0; i < bytes.Length; i++) {
                 *(dst + i) = bytes[i];

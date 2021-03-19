@@ -38,7 +38,7 @@ namespace GoodMemory {
                 return false;
             }
 
-            var type = (ActionType)action.Type;
+            var type = (ActionType) action.Type;
 
             if (type != ActionType.Cards) {
                 return this.HasItemActionUnlocked(action.RowId);
@@ -46,7 +46,7 @@ namespace GoodMemory {
 
             var cardId = item.AdditionalData;
             var card = this.Plugin.Interface.Data.GetExcelSheet<TripleTriadCard>().GetRow(cardId);
-            return card != null && this.HasCard((ushort)card.RowId);
+            return card != null && this.HasCard((ushort) card.RowId);
         }
 
         private bool HasItemActionUnlocked(long itemActionId) {
