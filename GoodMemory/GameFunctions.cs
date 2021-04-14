@@ -21,7 +21,7 @@ namespace GoodMemory {
 
             var hasIaUnlockedPtr = plugin.Interface.TargetModuleScanner.ScanText("48 83 EC 28 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??");
             var hasCardPtr = plugin.Interface.TargetModuleScanner.ScanText("40 53 48 83 EC 20 48 8B D9 66 85 D2 74 ??");
-            this._cardStaticAddr = plugin.Interface.TargetModuleScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 74 ?? 48 8B 53 ?? 48 8D 4B ?? 48 83 C2 0C 48 8D 14 ?? E8 ?? ?? ?? ?? 40 FE C7 40 3A FD 72 ?? 48 8B 5C 24 ??");
+            this._cardStaticAddr = plugin.Interface.TargetModuleScanner.GetStaticAddressFromSig("41 0F B7 17 48 8D 0D ?? ?? ?? ??");
 
             if (hasIaUnlockedPtr == IntPtr.Zero || hasCardPtr == IntPtr.Zero || this._cardStaticAddr == IntPtr.Zero) {
                 throw new ApplicationException("Could not get pointers for game functions");
