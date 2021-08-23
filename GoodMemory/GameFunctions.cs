@@ -17,11 +17,11 @@ namespace GoodMemory {
         private readonly IntPtr _cardStaticAddr;
 
         public GameFunctions(Plugin plugin) {
-            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Plugin cannot be null");
+            this.Plugin = plugin;
 
-            var hasIaUnlockedPtr = plugin.Interface.TargetModuleScanner.ScanText("48 83 EC 28 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??");
-            var hasCardPtr = plugin.Interface.TargetModuleScanner.ScanText("40 53 48 83 EC 20 48 8B D9 66 85 D2 74 ??");
-            this._cardStaticAddr = plugin.Interface.TargetModuleScanner.GetStaticAddressFromSig("41 0F B7 17 48 8D 0D ?? ?? ?? ??");
+            var hasIaUnlockedPtr = this.Plugin.SigScanner.ScanText("48 83 EC 28 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ??");
+            var hasCardPtr = this.Plugin.SigScanner.ScanText("40 53 48 83 EC 20 48 8B D9 66 85 D2 74 ??");
+            this._cardStaticAddr = this.Plugin.SigScanner.GetStaticAddressFromSig("41 0F B7 17 48 8D 0D ?? ?? ?? ??");
 
             if (hasIaUnlockedPtr == IntPtr.Zero || hasCardPtr == IntPtr.Zero || this._cardStaticAddr == IntPtr.Zero) {
                 throw new ApplicationException("Could not get pointers for game functions");
@@ -45,7 +45,7 @@ namespace GoodMemory {
             }
 
             var cardId = item.AdditionalData;
-            var card = this.Plugin.Interface.Data.GetExcelSheet<TripleTriadCard>().GetRow(cardId);
+            var card = this.Plugin.DataManager.GetExcelSheet<TripleTriadCard>().GetRow(cardId);
             return card != null && this.HasCard((ushort) card.RowId);
         }
 

@@ -1,8 +1,14 @@
 ﻿author: ascclemens
 name: Good Memory
+punchline: Adds an indicator in item tooltips to show whether you have acquired that item.
 description: |-
   Adds an indicator in item tooltips to show whether you have acquired that item.
 
   This indicator is in the item's description near the bottom and only appears for
   items that are unlockable, such as orchestrion rolls, minions, etc.
+
+  Square Enix say this plugin is impossible!
+
+  Icon: Server by Vectorstall from the Noun Project
 repo_url: https://git.sr.ht/~jkcclemens/GoodMemory
+icon_url: https://annaclemens.io/assets/plugins/icons/goodmemory.png

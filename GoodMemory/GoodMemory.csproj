@@ -4,8 +4,10 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <Version>1.0.8</Version>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFramework>net5-windows</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Dalamud">
@@ -22,9 +24,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="1.2.1"/>
-        <PackageReference Include="Fody" Version="6.5.1" PrivateAssets="all"/>
-        <PackageReference Include="ILMerge.Fody" Version="1.16.0" PrivateAssets="all"/>
-        <PackageReference Include="XivCommon" Version="1.6.0"/>
+        <PackageReference Include="DalamudPackager" Version="2.0.0"/>
+        <PackageReference Include="XivCommon" Version="3.0.1"/>
     </ItemGroup>
 </Project>
