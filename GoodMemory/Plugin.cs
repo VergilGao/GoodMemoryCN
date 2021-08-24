@@ -7,6 +7,7 @@ using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.IoC;
 using XivCommon;
 using XivCommon.Functions.Tooltips;
 
@@ -15,17 +16,19 @@ namespace GoodMemory {
     public class Plugin : IDalamudPlugin {
         public string Name => "Good Memory";
 
-        private ClientState ClientState { get; }
-        internal DataManager DataManager { get; }
-        internal SigScanner SigScanner { get; }
+        [PluginService]
+        private ClientState ClientState { get; init; } = null!;
+
+        [PluginService]
+        internal DataManager DataManager { get; init; } = null!;
+
+        [PluginService]
+        internal SigScanner SigScanner { get; init; } = null!;
+
         private GameFunctions Functions { get; }
         private XivCommonBase Common { get; }
 
-        public Plugin(ClientState clientState, DataManager dataManager, SigScanner sigScanner) {
-            this.ClientState = clientState;
-            this.DataManager = dataManager;
-            this.SigScanner = sigScanner;
-
+        public Plugin() {
             this.Common = new XivCommonBase(Hooks.Tooltips);
             this.Common.Functions.Tooltips.OnItemTooltip += this.OnItemTooltip;
 
@@ -50,7 +53,7 @@ namespace GoodMemory {
                 itemId -= 1_000_000;
             }
 
-            var item = this.DataManager.GetExcelSheet<Item>().GetRow((uint) itemId);
+            var item = this.DataManager.GetExcelSheet<Item>()!.GetRow((uint) itemId);
             if (item == null) {
                 return;
             }
@@ -59,7 +62,7 @@ namespace GoodMemory {
 
             // Faded Copies
             if (item.FilterGroup == 12 && item.ItemUICategory.Value?.RowId == 94 && item.LevelItem.Value?.RowId == 1) {
-                var recipeResults = this.DataManager.GetExcelSheet<Recipe>()
+                var recipeResults = this.DataManager.GetExcelSheet<Recipe>()!
                     .Where(recipe => recipe.UnkStruct5.Any(ritem => ritem.ItemIngredient == item.RowId))
                     .Select(recipe => recipe.ItemResult.Value)
                     .Where(result => result != null)
@@ -74,7 +77,7 @@ namespace GoodMemory {
                     Debug.Assert(resultAction != null, nameof(resultAction) + " != null");
 
                     uint orchId = resultAction.Data[0];
-                    var orch = this.DataManager.GetExcelSheet<Orchestrion>().GetRow(orchId);
+                    var orch = this.DataManager.GetExcelSheet<Orchestrion>()!.GetRow(orchId);
                     if (orch == null) {
                         continue;
                     }

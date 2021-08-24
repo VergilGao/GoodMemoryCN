@@ -45,7 +45,7 @@ namespace GoodMemory {
             }
 
             var cardId = item.AdditionalData;
-            var card = this.Plugin.DataManager.GetExcelSheet<TripleTriadCard>().GetRow(cardId);
+            var card = this.Plugin.DataManager.GetExcelSheet<TripleTriadCard>()!.GetRow(cardId);
             return card != null && this.HasCard((ushort) card.RowId);
         }
 
