@@ -28,9 +28,6 @@
         <PackageReference Include="XivCommon" Version="3.0.1"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="..\icon.png">
-            <Link>images/icon.png</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        <Content Include="..\icon.png" Link="images/icon.png" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
     </ItemGroup>
 </Project>
