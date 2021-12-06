@@ -24,9 +24,10 @@ namespace GoodMemory {
         Miscellaneous = 2_633, // riding maps, blu totems, emotes/dances, hairstyles
         Cards = 3_357, // cards
         GathererBooks = 4_107, // gatherer books
-        OrchestrionRolls = 5_845, // orchestrion rolls
+        OrchestrionRolls = 25_183, // orchestrion rolls
         // these appear to be server-side
         // FieldNotes = 19_743, // bozjan field notes
         FashionAccessories = 20_086, // fashion accessories
+        // missing: 2_894 (always false)
     }
 }

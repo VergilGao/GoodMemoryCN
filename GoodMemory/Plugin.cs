@@ -1,6 +1,5 @@
 ﻿using Dalamud.Plugin;
 using Lumina.Excel.GeneratedSheets;
-using System.Diagnostics;
 using System.Linq;
 using Dalamud.Data;
 using Dalamud.Game;
@@ -48,7 +47,7 @@ namespace GoodMemory {
             if (itemId > 2_000_000) {
                 return;
             }
-
+            
             if (itemId > 1_000_000) {
                 itemId -= 1_000_000;
             }
@@ -63,20 +62,18 @@ namespace GoodMemory {
             // Faded Copies
             if (item.FilterGroup == 12 && item.ItemUICategory.Value?.RowId == 94 && item.LevelItem.Value?.RowId == 1) {
                 var recipeResults = this.DataManager.GetExcelSheet<Recipe>()!
-                    .Where(recipe => recipe.UnkStruct5.Any(ritem => ritem.ItemIngredient == item.RowId))
+                    .Where(recipe => recipe.UnkData5.Any(ritem => ritem.ItemIngredient == item.RowId))
                     .Select(recipe => recipe.ItemResult.Value)
                     .Where(result => result != null)
                     .ToArray();
 
                 foreach (var result in recipeResults) {
                     var resultAction = result?.ItemAction?.Value;
-                    if (!ActionTypeExt.IsValidAction(resultAction)) {
+                    if (result == null || (ActionType?) resultAction?.Type != ActionType.OrchestrionRolls) {
                         continue;
                     }
 
-                    Debug.Assert(resultAction != null, nameof(resultAction) + " != null");
-
-                    uint orchId = resultAction.Data[0];
+                    var orchId = result.AdditionalData;
                     var orch = this.DataManager.GetExcelSheet<Orchestrion>()!.GetRow(orchId);
                     if (orch == null) {
                         continue;
