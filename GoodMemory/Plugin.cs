@@ -111,6 +111,14 @@ namespace GoodMemory {
                     parenL = " (";
                     parenR = ")";
                     break;
+                case Dalamud.ClientLanguage.ChineseSimplified:
+                    acquired = "已获得";
+                    colon = "：";
+                    yes = "是";
+                    no = "否";
+                    parenL = " (";
+                    parenR = ")";
+                    break;
                 case Dalamud.ClientLanguage.French:
                     acquired = "Acquis";
                     colon = " : ";

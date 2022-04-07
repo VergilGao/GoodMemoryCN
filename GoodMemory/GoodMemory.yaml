@@ -1,13 +1,13 @@
-﻿author: ascclemens
-name: Good Memory
-punchline: Adds an indicator in item tooltips to show whether you have acquired that item.
+﻿author: ascclemens, VergilGao
+name: Good Memory CN
+punchline: 在物品详情中添加一个选项来标识您是否已经获得该物品。
 description: |-
-  Adds an indicator in item tooltips to show whether you have acquired that item.
+  在物品详情中添加一个选项来标识您是否已经获得该物品。
 
-  This indicator is in the item's description near the bottom and only appears for
-  items that are unlockable, such as orchestrion rolls, minions, etc.
+  此指示器在物品描述中的底部显示“已获得：是/否”。
+  只作用于可解锁的物品，比如乐谱、宠物等。
+  残破的乐谱会显示他可以制造的成品乐谱的获得情况。
 
-  Square Enix say this plugin is impossible!
+  SE竟然说这个功能无法实现！！
 
-  Icon: Server by Vectorstall from the Noun Project
-repo_url: https://git.annaclemens.io/ascclemens/GoodMemory
+repo_url: https://github.com/VergilGao/GoodMemoryCN
