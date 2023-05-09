@@ -4,7 +4,7 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <Version>1.1.2</Version>
-        <TargetFramework>net6.0-windows</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -37,8 +37,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.8" />
-        <PackageReference Include="XivCommon" Version="6.0.2" />
+        <PackageReference Include="DalamudPackager" Version="2.1.11" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="..\icon.png" Link="images/icon.png" CopyToOutputDirectory="PreserveNewest" Visible="false" />
