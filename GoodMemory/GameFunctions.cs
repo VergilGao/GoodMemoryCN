@@ -21,10 +21,16 @@ public class GameFunctions
         var hasCardPtr = Service.SigScanner.ScanText("40 53 48 83 EC 20 48 8B D9 66 85 D2 74");
         var itemToUlongPtr = Service.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 85 C0 74 33 83 7F 04 00");
 
-        _cardStaticAddr = Service.SigScanner.GetStaticAddressFromSig("41 0F B7 17 48 8D 0D");
+        _cardStaticAddr = Service.SigScanner.GetStaticAddressFromSig("41 0F B7 17 48 8D 0D", 3);
 
-        if (hasIaUnlockedPtr == IntPtr.Zero || hasCardPtr == IntPtr.Zero || _cardStaticAddr == IntPtr.Zero || itemToUlongPtr == IntPtr.Zero)
-            throw new ApplicationException("Could not get pointers for game functions");
+        if (hasIaUnlockedPtr == IntPtr.Zero)
+            throw new ApplicationException("hasIaUnlockedPtr is nullptr");
+        if (hasCardPtr == IntPtr.Zero)
+            throw new ApplicationException("hasCardPtr is nullptr");
+        if (_cardStaticAddr == IntPtr.Zero)
+            throw new ApplicationException("_cardStaticAddr is nullptr");
+        if (itemToUlongPtr == IntPtr.Zero)
+            throw new ApplicationException("itemToUlongPtr is nullptr");
 
         _hasItemActionUnlocked = Marshal.GetDelegateForFunctionPointer<HasItemActionUnlockedDelegate>(hasIaUnlockedPtr);
         _hasCard = Marshal.GetDelegateForFunctionPointer<HasCardDelegate>(hasCardPtr);
